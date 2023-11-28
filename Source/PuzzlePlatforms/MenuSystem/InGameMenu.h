@@ -13,5 +13,22 @@ UCLASS()
 class PUZZLEPLATFORMS_API UInGameMenu : public UMenuWidget
 {
 	GENERATED_BODY()
+
+protected:
+
+	virtual bool Initialize();
 	
+private:
+
+	UPROPERTY(meta = (BindWidget))
+	class UButton* CancleButton;
+
+	UPROPERTY(meta = (BindWidget))
+	class UButton* QuitButton;
+
+	UFUNCTION()
+	void CancleMenu();
+
+	UFUNCTION()
+	void QuitGame();
 };
