@@ -4,16 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "PlatFormTrigger.generated.h"
+#include "PlatformTrigger.generated.h"
 
 UCLASS()
-class PUZZLEPLATFORMS_API APlatFormTrigger : public AActor
+class PUZZLEPLATFORMS_API APlatformTrigger : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	APlatFormTrigger();
+	APlatformTrigger();
 
 protected:
 	// Called when the game starts or when spawned
