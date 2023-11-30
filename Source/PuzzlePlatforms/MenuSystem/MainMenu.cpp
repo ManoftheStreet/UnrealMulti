@@ -70,7 +70,21 @@ void UMainMenu::SetServerList(TArray<FString> ServerNames)
 void UMainMenu::SelectIndex(uint32 Index)
 {
 	SelectedIndex = Index;
+	UpdateChildren();
 }
+
+void UMainMenu::UpdateChildren()
+{
+	for (int32 i = 0; i < ServerList->GetChildrenCount(); i++)
+	{
+		UServerRow* Row = Cast<UServerRow>(ServerList->GetChildAt(i));
+		if (Row)
+		{
+			Row->Selected = (SelectedIndex && SelectedIndex.GetValue() == i);
+		}
+	}
+}
+
 
 void UMainMenu::JoinServer()
 {

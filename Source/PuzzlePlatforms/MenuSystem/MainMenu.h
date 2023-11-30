@@ -72,4 +72,6 @@ private:
 	void QuitGame();
 
 	TOptional<uint32> SelectedIndex;
+
+	void UpdateChildren();
 };
