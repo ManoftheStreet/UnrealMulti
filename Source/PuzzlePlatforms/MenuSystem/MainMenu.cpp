@@ -21,13 +21,19 @@ bool UMainMenu::Initialize()
 	if (!Success) return false;
 
 	if (!ensure(HostButton != nullptr)) return false;
-	HostButton->OnClicked.AddDynamic(this, &UMainMenu::HostServer);
+	HostButton->OnClicked.AddDynamic(this, &UMainMenu::OpenHostMenu);
+
+	if (!ensure(HostIPButton != nullptr)) return false;
+	HostIPButton->OnClicked.AddDynamic(this, &UMainMenu::HostServer);
 
 	if (!ensure(JoinButton != nullptr)) return false;
 	JoinButton->OnClicked.AddDynamic(this, &UMainMenu::OpenJoinMenu);
 
-	if (!ensure(CancleButton != nullptr)) return false;
-	CancleButton->OnClicked.AddDynamic(this, &UMainMenu::CancleJoinMenu);
+	if (!ensure(CancleHostMenuButton != nullptr)) return false;
+	CancleHostMenuButton->OnClicked.AddDynamic(this, &UMainMenu::CancleJoinMenu);
+
+	if (!ensure(CancleJoinMenuButton != nullptr)) return false;
+	CancleJoinMenuButton->OnClicked.AddDynamic(this, &UMainMenu::CancleJoinMenu);
 
 	if (!ensure(JoinIPButton != nullptr)) return false;
 	JoinIPButton->OnClicked.AddDynamic(this, &UMainMenu::JoinServer);
@@ -38,15 +44,23 @@ bool UMainMenu::Initialize()
 	return true;
 }
 
+void UMainMenu::OpenHostMenu()
+{
+	if (!ensure(MenuSwitcher != nullptr)) return;
+	if (!ensure(HostMenu != nullptr)) return;
+	MenuSwitcher->SetActiveWidget(HostMenu);
+}
+
 void UMainMenu::HostServer()
 {
 	if (MenuInterface)
 	{
-		MenuInterface->Host();
+		FString ServerName = ServerHostName->Text.ToString();
+		MenuInterface->Host(ServerName);
 	}
 }
 
-void UMainMenu::SetServerList(TArray<FString> ServerNames)
+void UMainMenu::SetServerList(TArray<FServerData> ServerNames)
 {
 	UWorld* World = this->GetWorld();
 	if (!ensure(World != nullptr)) return;
@@ -54,12 +68,15 @@ void UMainMenu::SetServerList(TArray<FString> ServerNames)
 	ServerList->ClearChildren();
 
 	uint32 i = 0;
-	for (const FString& ServerName : ServerNames)
+	for (const FServerData& ServerData : ServerNames)
 	{
 		UServerRow* Row = CreateWidget<UServerRow>(World, ServerRowClass);
 		if (!ensure(Row != nullptr)) return;
 
-		Row->ServerName->SetText(FText::FromString(ServerName));
+		Row->ServerName->SetText(FText::FromString(ServerData.Name));
+		Row->HostUser->SetText(FText::FromString(ServerData.HostUserName));
+		FString FractionText = FString::Printf(TEXT("%d/%d"), ServerData.CurrentPlayers, ServerData.MaxPlayers);
+		Row->ConnectionFraction->SetText(FText::FromString(FractionText));
 		Row->Setup(this, i);
 		i++;
 
@@ -84,7 +101,6 @@ void UMainMenu::UpdateChildren()
 		}
 	}
 }
-
 
 void UMainMenu::JoinServer()
 {
